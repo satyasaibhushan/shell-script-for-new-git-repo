@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # GitHub API Token
-GH_API_TOKEN='64e8071589f58d1d2eee6bda644bfe62dfffd3b0'
+GH_API_TOKEN='*****'
 # GitHub User Name
-GH_USER_NAME='satyasaibhushan'
+GH_USER_NAME='****'
 # Variable to store first argument to setup-repo, the repo name. Will be used as GH repo name, too.
 REPO_NAME=$1
 # Store current working directory.
