@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # GitHub API Token
-GH_API_TOKEN='****'
+GH_API_TOKEN='*****'
 # GitHub User Name
 GH_USER_NAME='****'
 # Variable to store first argument to setup-repo, the repo name. Will be used as GH repo name, too.
@@ -10,9 +10,19 @@ REPO_NAME=$1
 CURRENT_DIR=$PWD
 # Project directory can be passed as second argument to setup-repo, or will default to current working directory.
 PROJECT_DIR=${2:-$CURRENT_DIR}
-# Specified if folder does not exist and needed to be created
 IS_NEW=$3
-
+# To check if git ignore file is present
+IS_GITIGNORE_PRESENT="N"
+cd $PROJECT_DIR
+for i in $(ls -a)
+do
+  if [ "$i" = ".gitignore" ]
+  then
+    IS_GITIGNORE_PRESENT="Y"
+    break
+  fi
+done
+# GitHub repos Create API call
 if [ -z $1 ]
  then 
    echo " " ; echo ""
@@ -27,8 +37,13 @@ if [ -z $1 ]
    echo " " ; echo ""
 else  
     curl -H "Authorization: token $GH_API_TOKEN" https://api.github.com/user/repos -d '{"name": "'"${REPO_NAME}"'"}'
+   
+   PARENT=$(echo $0 | sed -e 's;\/[^/]*$;;')
+    if [ $IS_GITIGNORE_PRESENT = "N" ]
+       then 
+          cp $PARENT/.gitignore $PROJECT_DIR    
+    fi     
     cd $PROJECT_DIR
-
     if [ ! -z $3 ];
      then 
         mkdir $REPO_NAME
@@ -37,6 +52,7 @@ else
      fi    
 
         git init 
+        # Initialize Git in project directory, and add the GH repo remote.
         if [  -z $2 ] || [ ! -z $3  ] ;
         then 
             touch README.md
@@ -48,7 +64,8 @@ else
             if [ "$IsReadmeNeeded"  = "Y" ]
             then 
                 touch README.md
-            fi    
+            fi 
+
             git add .
             git commit -m "$Message"    
         fi
